@@ -1,0 +1,13 @@
+services:
+  meetmind:
+    build: .
+    ports:
+      - '9000:3000'
+      - '9001:3452'
+    env_file:
+      - .env
+    environment:
+      INTERNAL_API_URL: http://localhost:9001/api
+      INTERNAL_API_URL_UPLOADS: http://localhost:9001/uploads
+      NEXT_PUBLIC_PROD_API_PATH: /api
+    restart: unless-stopped

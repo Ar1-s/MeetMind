@@ -1,0 +1,2 @@
+metro-debug-20260423-022340-stdout.log
+metro-debug-20260423-022340-stderr.log

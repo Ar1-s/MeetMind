@@ -1,0 +1,17 @@
+{
+  "name": "meetmind-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "trap 'kill 0' INT; pnpm dev:web & pnpm dev:api & wait",
+    "dev:web": "pnpm --filter ./packages/web dev",
+    "dev:api": "cd packages/api && ./start-api.sh",
+    "build": "pnpm --filter ./packages/web build",
+    "lint": "pnpm --filter ./packages/web lint",
+    "dev:mobile": "trap 'kill 0' INT; pnpm dev:api & pnpm --filter @meetmind/mobile dev & wait",
+    "dev:mobile:ios": "trap 'kill 0' INT; pnpm dev:api & pnpm --filter @meetmind/mobile ios & wait",
+    "dev:mobile:android": "trap 'kill 0' INT; pnpm dev:api & pnpm --filter @meetmind/mobile android & wait",
+    "dev:all": "trap 'kill 0' INT; pnpm dev:api & pnpm dev:web & pnpm --filter @meetmind/mobile dev & wait",
+    "setup": "pnpm install && cd packages/api && ./start-api.sh --setup-only || true"
+  }
+}

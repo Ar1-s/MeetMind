@@ -1,0 +1,64 @@
+{
+  "assets": [
+    {
+      "id": "hex-blue",
+      "file": "hex-blue.jpg",
+      "name": "蓝色几何网格",
+      "tags": ["tech", "network", "blue", "abstract", "data"],
+      "author": "Omar Lopez-Rincon",
+      "source": "Unsplash",
+      "source_url": "https://unsplash.com/photos/blue-and-black-hexagonal-pattern-o1_F9X9ySn0",
+      "license": "Unsplash License"
+    },
+    {
+      "id": "swirl-dark-blue",
+      "file": "swirl-dark-blue.jpg",
+      "name": "深蓝流动纹理",
+      "tags": ["abstract", "blue", "gradient", "calm", "focus"],
+      "author": "Steve Johnson",
+      "source": "Unsplash",
+      "source_url": "https://unsplash.com/photos/an-abstract-blue-background-with-wavy-lines-9hUJv90r7Yg",
+      "license": "Unsplash License"
+    },
+    {
+      "id": "teal-texture",
+      "file": "teal-texture.jpg",
+      "name": "青绿纹理",
+      "tags": ["abstract", "texture", "modern", "teal", "clean"],
+      "author": "Josiah Rock",
+      "source": "Unsplash",
+      "source_url": "https://unsplash.com/photos/abstract-wallpaper-Kp03tCkEaLk",
+      "license": "Unsplash License"
+    },
+    {
+      "id": "blue-wavy-lines",
+      "file": "blue-wavy-lines.jpg",
+      "name": "蓝色波纹线条",
+      "tags": ["wave", "lines", "blue", "motion", "tech"],
+      "author": "Visax",
+      "source": "Unsplash",
+      "source_url": "https://unsplash.com/photos/a-blue-background-with-wavy-lines-6NoEpRc5x2s",
+      "license": "Unsplash License"
+    },
+    {
+      "id": "blue-wavy-shapes",
+      "file": "blue-wavy-shapes.jpg",
+      "name": "柔和蓝色渐变",
+      "tags": ["fluid", "blue", "gradient", "soft", "modern"],
+      "author": "MJH SHIKDER",
+      "source": "Unsplash",
+      "source_url": "https://unsplash.com/photos/an-abstract-blue-background-with-wavy-lines-jypIYXtYw8c",
+      "license": "Unsplash License"
+    },
+    {
+      "id": "conference-room",
+      "file": "conference-room.jpg",
+      "name": "会议室实景",
+      "tags": ["meeting", "office", "team", "business", "room"],
+      "author": "JIRAN FAMILY",
+      "source": "Unsplash",
+      "source_url": "https://unsplash.com/photos/people-sitting-in-front-of-table-with-laptop-ohVCTatblUQ",
+      "license": "Unsplash License"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+services:
+  meetmind:
+    image: ${MEETMIND_IMAGE:-meetmind:latest}
+    container_name: ${MEETMIND_CONTAINER_NAME:-meetmind}
+    ports:
+      - '${MEETMIND_WEB_PORT:-3000}:3000'
+      - '${MEETMIND_API_PORT:-3452}:3452'
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      INTERNAL_API_URL: http://127.0.0.1:3452/api
+      INTERNAL_API_URL_UPLOADS: http://127.0.0.1:3452/uploads
+      NEXT_PUBLIC_PROD_API_PATH: /api
+      PYTHONUNBUFFERED: '1'
+    volumes:
+      - meetmind_api_data:/app/packages/api/app/data
+      - meetmind_api_uploads:/app/packages/api/app/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'python -c "import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:3452/health\", timeout=5).read()"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+
+volumes:
+  meetmind_api_data:
+  meetmind_api_uploads:

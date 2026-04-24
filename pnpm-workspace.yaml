@@ -1,0 +1,9 @@
+packages:
+  - packages/*
+
+ignoredBuiltDependencies:
+  - esbuild
+  - msw
+  - playwright-chromium
+  - sharp
+  - unrs-resolver
