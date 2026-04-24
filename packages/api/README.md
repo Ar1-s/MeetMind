@@ -1,23 +1,60 @@
-# MeetMind API
+﻿# MeetMind API
 
-MeetMind 鍚庣鏈嶅姟锛屽熀浜?FastAPI 鏋勫缓銆?
-## 杩愯
+MeetMind API 是项目的后端服务，基于 FastAPI 构建，负责会议、任务、日历、录音、纪要、PPT、思维导图、项目与 OKR 等业务能力。
+
+## 技术栈
+
+- FastAPI
+- SQLAlchemy Async
+- SQLite / aiosqlite
+- Tongyi Qwen / DashScope
+
+## 本地启动
 
 ```bash
-# 鍒涘缓铏氭嫙鐜
 python3 -m venv .venv
 source .venv/bin/activate
-
-# 瀹夎渚濊禆
-pip install -e ".[dev]"
-
-# 鍚姩鏈嶅姟
+pip install -e .
 uvicorn app.main:app --reload --port 3452
 ```
 
-## API 鏂囨。
+## API 文档
 
-鍚姩鏈嶅姟鍚庤闂細
+启动后可访问：
 
-- Swagger UI: http://localhost:3452/docs
-- ReDoc: http://localhost:3452/redoc
+- Swagger UI: `http://localhost:3452/docs`
+- ReDoc: `http://localhost:3452/redoc`
+
+## 主要目录
+
+- `app/routes`
+  API 路由层
+- `app/services`
+  业务服务层
+- `app/models`
+  数据模型与数据库初始化
+- `app/schemas`
+  Pydantic 模型
+- `app/tools`
+  Agent / Tool Calling 相关工具
+
+## 运行配置
+
+建议通过环境变量或 `.env` 提供至少以下配置：
+
+```env
+AI_PROVIDER=qwen
+DASHSCOPE_API_KEY=your-key
+DASHSCOPE_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+QWEN_MODEL=qwen-plus
+QWEN_CHAT_MODEL=qwen-plus
+QWEN_TRANSCRIPTION_MODEL=qwen3-asr-flash
+```
+
+如果服务器需要处理长音频切片，可额外配置：
+
+```env
+FFMPEG_PATH=
+FFPROBE_PATH=
+```
+
