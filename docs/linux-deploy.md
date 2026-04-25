@@ -9,9 +9,16 @@ Use Docker on the Linux server. The repository now includes:
 - `docker-compose.build.yml`
 - `start-project.sh`
 
+The production stack now runs as **two containers**:
+
+- `api`: FastAPI backend
+- `web`: Next.js frontend
+
+This reduces single-image build pressure and makes pull-based deployment lighter on low-memory servers.
+
 `start-project.sh` supports both deployment styles:
 
-- pull from Docker Hub / registry
+- pull images from Docker Hub / registry
 - build locally from source
 
 ## Prerequisites
@@ -41,7 +48,8 @@ If you already use a reverse proxy such as Nginx or Caddy, keeping the defaults 
 Add this to `.env`:
 
 ```env
-MEETMIND_IMAGE=docker.io/<your-dockerhub-user>/meetmind:latest
+MEETMIND_WEB_IMAGE=docker.io/<your-dockerhub-user>/meetmind-web:latest
+MEETMIND_API_IMAGE=docker.io/<your-dockerhub-user>/meetmind-api:latest
 ```
 
 Then start:
@@ -53,9 +61,9 @@ chmod +x start-project.sh
 
 This will:
 
-- pull the published image
-- start the API and web server in one container
-- persist SQLite data and uploaded files in Docker volumes
+- pull the published web and API images
+- start the frontend and backend as separate containers
+- persist SQLite data and uploaded files through the API container volume mounts
 
 ### Option B: Build directly on the server from source
 
@@ -66,9 +74,9 @@ chmod +x start-project.sh
 
 This will:
 
-- build the production Docker image on the server
-- start the API and web server in one container
-- persist SQLite data and uploaded files in Docker volumes
+- build the web and API images separately on the server
+- start the frontend and backend as separate containers
+- persist SQLite data and uploaded files through Docker volumes
 
 If your network has trouble reaching the default Debian sources during image build, you can optionally add to `.env`:
 
@@ -76,6 +84,22 @@ If your network has trouble reaching the default Debian sources during image bui
 DEBIAN_MIRROR=http://deb.debian.org/debian
 DEBIAN_SECURITY_MIRROR=http://deb.debian.org/debian-security
 ```
+
+If the server has very low memory (for example 2 GB), you can also lower build pressure:
+
+```env
+MEETMIND_COMPOSE_PARALLEL_LIMIT=1
+PNPM_FILTER=./packages/web...
+PNPM_NETWORK_CONCURRENCY=1
+PNPM_CHILD_CONCURRENCY=1
+NODE_MAX_OLD_SPACE_SIZE=512
+```
+
+This reduces:
+
+- concurrent service builds
+- pnpm install concurrency
+- Next.js build heap size
 
 ### Default mode
 
@@ -85,7 +109,7 @@ DEBIAN_SECURITY_MIRROR=http://deb.debian.org/debian-security
 
 Default behavior:
 
-- if `MEETMIND_IMAGE` is set, it pulls from the registry
+- if both `MEETMIND_WEB_IMAGE` and `MEETMIND_API_IMAGE` are set, it pulls from the registry
 - otherwise, it builds locally from source
 
 ## 3. Check logs
@@ -110,8 +134,6 @@ If you set `MEETMIND_WEB_PORT` or `MEETMIND_API_PORT`, replace the ports above w
 
 ## Notes
 
-- The container includes `ffmpeg`, so long-audio slicing and transcription can run on Linux too.
-- The API loads `packages/api/.env` with `override=False`, so real server environment variables are no longer accidentally overridden by a packaged local file.
+- The API container includes `ffmpeg`, so long-audio slicing and transcription can run on Linux too.
 - Uploaded recordings, generated PPT assets, and SQLite data are persisted through Docker volumes.
-- `docker-compose.prod.yml` is now registry-friendly. `docker-compose.build.yml` is only needed when building from source.
-- You can publish manually with `./scripts/docker-publish.sh docker.io/<your-dockerhub-user>/meetmind:latest`.
+- `docker-compose.prod.yml` is registry-friendly. `docker-compose.build.yml` is only needed when building from source.

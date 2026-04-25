@@ -1,8 +1,20 @@
 services:
-  meetmind:
+  api:
     build:
       context: .
       dockerfile: Dockerfile
+      target: api-runtime
       args:
         DEBIAN_MIRROR: ${DEBIAN_MIRROR:-http://deb.debian.org/debian}
         DEBIAN_SECURITY_MIRROR: ${DEBIAN_SECURITY_MIRROR:-http://deb.debian.org/debian-security}
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web-runtime
+      args:
+        PNPM_FILTER: ${PNPM_FILTER:-./packages/web...}
+        PNPM_NETWORK_CONCURRENCY: ${PNPM_NETWORK_CONCURRENCY:-4}
+        PNPM_CHILD_CONCURRENCY: ${PNPM_CHILD_CONCURRENCY:-2}
+        NODE_MAX_OLD_SPACE_SIZE: ${NODE_MAX_OLD_SPACE_SIZE:-768}

@@ -8,25 +8,29 @@ COMPOSE_BUILD_FILE="$ROOT_DIR/docker-compose.build.yml"
 WEB_PORT="${MEETMIND_WEB_PORT:-3000}"
 API_PORT="${MEETMIND_API_PORT:-3452}"
 MODE="${1:-start}"
-DEFAULT_IMAGE_PLACEHOLDER="meetmind:latest"
+DEFAULT_WEB_IMAGE_PLACEHOLDER="meetmind-web:latest"
+DEFAULT_API_IMAGE_PLACEHOLDER="meetmind-api:latest"
+COMPOSE_PARALLEL_LIMIT_VALUE="${MEETMIND_COMPOSE_PARALLEL_LIMIT:-1}"
 
 print_usage() {
   cat <<'EOF'
 MeetMind Linux Launcher
 
 Usage:
-  ./start-project.sh            Start the stack (pull image if MEETMIND_IMAGE is set, otherwise build locally)
+  ./start-project.sh            Start the stack (pull images if MEETMIND_WEB_IMAGE and MEETMIND_API_IMAGE are set, otherwise build locally)
   ./start-project.sh start      Same as default
-  ./start-project.sh pull       Pull image from registry and start
+  ./start-project.sh pull       Pull images from registry and start
   ./start-project.sh build      Build from local source and start
   ./start-project.sh stop       Stop the production Docker stack
   ./start-project.sh restart    Restart using the same strategy as start
   ./start-project.sh logs       Follow container logs
 
 Environment:
-  MEETMIND_WEB_PORT   Public web port (default: 3000)
-  MEETMIND_API_PORT   Public API port (default: 3452)
-  MEETMIND_IMAGE      Registry image tag for pull-based deployment
+  MEETMIND_WEB_PORT             Public web port (default: 3000)
+  MEETMIND_API_PORT             Public API port (default: 3452)
+  MEETMIND_WEB_IMAGE            Registry image tag for the web container
+  MEETMIND_API_IMAGE            Registry image tag for the API container
+  MEETMIND_COMPOSE_PARALLEL_LIMIT  Limit concurrent service builds (default: 1)
 EOF
 }
 
@@ -62,7 +66,8 @@ run_compose() {
 }
 
 run_build_compose() {
-  docker compose -f "$COMPOSE_FILE" -f "$COMPOSE_BUILD_FILE" "$@"
+  COMPOSE_PARALLEL_LIMIT="$COMPOSE_PARALLEL_LIMIT_VALUE" \
+    docker compose -f "$COMPOSE_FILE" -f "$COMPOSE_BUILD_FILE" "$@"
 }
 
 read_env_value() {
@@ -88,11 +93,12 @@ read_env_value() {
   printf ''
 }
 
-has_registry_image() {
-  local image
-  image="$(read_env_value "MEETMIND_IMAGE")"
+has_registry_images() {
+  local web_image api_image
+  web_image="$(read_env_value "MEETMIND_WEB_IMAGE")"
+  api_image="$(read_env_value "MEETMIND_API_IMAGE")"
 
-  [[ -n "$image" && "$image" != "$DEFAULT_IMAGE_PLACEHOLDER" ]]
+  [[ -n "$web_image" && -n "$api_image" && "$web_image" != "$DEFAULT_WEB_IMAGE_PLACEHOLDER" && "$api_image" != "$DEFAULT_API_IMAGE_PLACEHOLDER" ]]
 }
 
 start_from_registry() {
@@ -105,7 +111,7 @@ start_from_local_build() {
 }
 
 start_default() {
-  if has_registry_image; then
+  if has_registry_images; then
     start_from_registry
   else
     start_from_local_build
@@ -132,8 +138,8 @@ case "$MODE" in
   pull)
     require_docker
     require_env_file
-    if ! has_registry_image; then
-      echo "MEETMIND_IMAGE is not set. Add it to .env before using pull mode."
+    if ! has_registry_images; then
+      echo "MEETMIND_WEB_IMAGE and MEETMIND_API_IMAGE must both be set in .env before using pull mode."
       exit 1
     fi
     start_from_registry

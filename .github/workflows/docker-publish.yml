@@ -1,8 +1,10 @@
-name: Publish Docker image
+name: Publish Docker images
 
 on:
   workflow_dispatch:
   push:
+    branches:
+      - 'main'
     tags:
       - 'v*'
 
@@ -28,21 +30,42 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Extract image metadata
-        id: meta
+      - name: Extract web image metadata
+        id: meta_web
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/meetmind
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/meetmind-web
           tags: |
             type=ref,event=tag
             type=raw,value=latest
 
-      - name: Build and push
+      - name: Extract API image metadata
+        id: meta_api
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/meetmind-api
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest
+
+      - name: Build and push web image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
+          target: web-runtime
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta_web.outputs.tags }}
+          labels: ${{ steps.meta_web.outputs.labels }}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          target: api-runtime
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta_api.outputs.tags }}
+          labels: ${{ steps.meta_api.outputs.labels }}
