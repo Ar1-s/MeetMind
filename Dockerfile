@@ -11,6 +11,7 @@ ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 WORKDIR /app
 
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY packages/mobile/package.json packages/mobile/
 COPY packages/shared/package.json packages/shared/
 COPY packages/web/package.json packages/web/
 
